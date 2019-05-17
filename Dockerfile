@@ -26,11 +26,12 @@ RUN    apk --no-cache update                              \
 # The accually spigot server container.
 FROM openjdk:12-alpine
 
-LABEL maintainer="Bryan Honof"                       \
-      maintainer.email="bryan@bryanhonof.be"         \
-      maintainer.website="https://www.bryanhonof.be" \
-      version="1.14.1"                               \
-      description="A minecraft spigot server in a cointainer!"
+LABEL maintainer         = "Bryan Honof"                                 \
+      maintainer.email   = "bryan@bryanhonof.be"                         \
+      maintainer.website = "https://www.bryanhonof.be"                   \
+      version            = "1.14.1"                                      \
+      description        = "A minecraft spigot server in a cointainer!"  \
+      dockerfile.repo    = "https://github.com/bryanhonof/docker_spigot"
 
 ENV SPIGOT_ACCEPT_EULA false
 ENV START_XMS          1G
