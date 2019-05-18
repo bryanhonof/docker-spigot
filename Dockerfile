@@ -38,26 +38,37 @@ LABEL maintainer         = "Bryan Honof"                                 \
 ENV SPIGOT_ACCEPT_EULA false
 ENV START_XMS          1G
 ENV START_XMX          1G
+ENV SPIGOT_DIR         /srv/minecraft
 
-WORKDIR /srv/minecraft
+WORKDIR $SPIGOT_DIR 
+
+RUN    mkdir -p $SPIGOT_DIR/logs           \
+                $SPIGOT_DIR/plugins        \
+                $SPIGOT_DIR/world          \
+                $SPIGOT_DIR/world_nether   \
+                $SPIGOT_DIR/world_the_end  \
+    && touch    $SPIGOT_DIR/logs/latest.log
 
 # Copy over files from the buildtools container.
 COPY --from=buildtools /tmp/build/spigot-*.jar      ./spigot.jar
-#COPY --from=buildtools /tmp/build/craftbukkit-*.jar ./craftbukkit.jar
 
 # Copy over the setup scripts
-COPY ./srv/minecraft/start.sh /srv/minecraft/start.sh
-COPY ./srv/minecraft/eula.sh  /srv/minecraft/eula.sh
+COPY ./srv/minecraft/start.sh $SPIGOT_DIR/start.sh
 
 RUN    addgroup -g 1000 -S minecraft                            \
     && adduser  -H -s /bin/sh -G minecraft -u 1000 -S minecraft \
-    && chown    -Rv minecraft:minecraft /srv/minecraft
+    && chown    -Rv minecraft:minecraft $SPIGOT_DIR             \
+    && ln       -sf /dev/stdout $SPIGOT_DIR/logs/latest.log
 
 USER minecraft:minecraft
 
-VOLUME /srv/minecraft
+VOLUME $SPIGOT_DIR
 
 EXPOSE 25565
 
-CMD ["./start.sh"]
+STOPSIGNAL SIGTERM
+
+ENTRYPOINT ["./start.sh"]
+
+CMD [" "]
 
