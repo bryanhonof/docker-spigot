@@ -1,3 +1,4 @@
+# ---------------------------------------------------------------------------- #
 # Minecraft Spigot server
 #
 # VERSION                 1.14.1
@@ -15,48 +16,44 @@ LABEL maintainer         = "Bryan Honof"                                 \
       description        = "A minecraft spigot server in a container!"   \
       dockerfile.repo    = "https://github.com/bryanhonof/docker_spigot"
 
-ENV SPIGOT_ACCEPT_EULA false
-ENV START_XMS          1G
-ENV START_XMX          1G
-ENV SPIGOT_DIR         /srv/minecraft
-
-WORKDIR $SPIGOT_DIR 
-
-# Create the directories the spigot server generates in advances so that
-# symlinks are possible.
-RUN    mkdir -p $SPIGOT_DIR/logs           \
-                $SPIGOT_DIR/plugins        \
-                $SPIGOT_DIR/world          \
-                $SPIGOT_DIR/world_nether   \
-                $SPIGOT_DIR/world_the_end  \
-    && touch    $SPIGOT_DIR/logs/latest.log
+ENV MOJANG_EULA_AGREE false
+ENV START_XMS         1G
+ENV START_XMX         1G
+ENV SPIGOT_DIR        /opt/spigot
+ENV DATA_DIR          /srv/minecraft
+ENV BIN_DIR           /usr/local/bin
+ENV EXPOSE_PORT       25565
+ENV RUN_USER          spigot
+ENV RUN_GROUP         spigot
 
 # Copy over files from the buildtools container.
-COPY --from=buildtools /tmp/build/spigot-*.jar      ./spigot.jar
+COPY --from=buildtools /tmp/build/spigot-*.jar $SPIGOT_DIR/spigot.jar
 
 # Copy over the setup scripts from the host machine.
-COPY ./srv/minecraft/start.sh $SPIGOT_DIR/start.sh
-COPY ./srv/minecraft/eula.sh  $SPIGOT_DIR/eula.sh
+COPY ./scripts/start.sh $BIN_DIR/start
+COPY ./scripts/eula.sh  $BIN_DIR/eula
 
 # Create a minecraft user and group that will execute the server so the
 # process is not running as root.
-RUN    addgroup -g 1000 -S minecraft                            \
-    && adduser  -H -s /bin/sh -G minecraft -u 1000 -S minecraft \
-    && chown    -Rv minecraft:minecraft $SPIGOT_DIR             \
-    && ln       -sf /dev/stdout $SPIGOT_DIR/logs/latest.log
+RUN    addgroup -g 1000 -S $RUN_GROUP                            \
+    && adduser  -H -s /bin/sh -G $RUN_GROUP -u 1000 -S $RUN_USER \
+    && mkdir    -p $DATA_DIR                                     \
+    && chown    -Rv $RUN_USER:$RUN_GROUP $SPIGOT_DIR $DATA_DIR
 
 # Switch to the minecraft user.
-USER minecraft:minecraft
+USER $RUN_USER:$RUN_GROUP
+
+WORKDIR $SPIGOT_DIR
 
 # Make the server directory persistant so world data is preserverd.
-VOLUME $SPIGOT_DIR
+VOLUME ["$SPIGOT_DIR"]
 
 # Expose the defalt minecraft port.
-EXPOSE 25565
+EXPOSE $EXPOSE_PORT
 
 STOPSIGNAL SIGTERM
 
-ENTRYPOINT ["./start.sh"]
+ENTRYPOINT ["start"]
 
-CMD [" "]
+CMD ["sh"]
 
