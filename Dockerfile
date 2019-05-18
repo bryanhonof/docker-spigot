@@ -2,8 +2,10 @@
 #
 # VERSION                 1.14.1
 
+ARG JAVA_VERSION=12
+
 # The spigot jar has to be compiled from the BuildTools.
-FROM openjdk:12-alpine AS buildtools
+FROM openjdk:$JAVA_VERSION-alpine AS buildtools
 
 # The link to get the BuildTools.jar from.
 ENV BUILDTOOLS_URL https://hub.spigotmc.org/jenkins/job/BuildTools/lastSuccessfulBuild/artifact/target/BuildTools.jar
@@ -24,7 +26,7 @@ RUN    apk --no-cache update                              \
 # ---------------------------------------------------------------------------- #
 
 # The accually spigot server container.
-FROM openjdk:12-alpine
+FROM openjdk:$JAVA_VERSION-alpine
 
 LABEL maintainer         = "Bryan Honof"                                 \
       maintainer.email   = "bryan@bryanhonof.be"                         \
