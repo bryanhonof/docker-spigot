@@ -1,3 +1,3 @@
 # Code Of Conduct
 
-Do not be an asshole, simple.
+[Respect Wheaton's Law](http://www.wheatonslaw.com/)
