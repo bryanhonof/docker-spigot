@@ -41,11 +41,11 @@ RUN addgroup -g 1000 -S $RUN_GROUP \
     && adduser -H -s /bin/sh -G $RUN_GROUP -u 1000 -S $RUN_USER
 
 # Copy over files from the buildtools container
-COPY --chown=$RUN_USER:$RUN_GROUP --from=buildtools /tmp/build/spigot-${SPIGOT_VERSION}.jar $SRV_DIR/spigot.jar
+COPY --chown=1000:1000 --from=buildtools /tmp/build/spigot-${SPIGOT_VERSION}.jar $SRV_DIR/spigot.jar
 
 # Copy over the setup scripts from the host machine
-COPY --chown=$RUN_USER:$RUN_GROUP ./scripts/start-server.sh $BIN_DIR/start-server
-COPY --chown=$RUN_USER:$RUN_GROUP ./scripts/check-eula.sh $BIN_DIR/check-eula
+COPY --chown=1000:1000 ./scripts/start-server.sh $BIN_DIR/start-server
+COPY --chown=1000:1000 ./scripts/check-eula.sh $BIN_DIR/check-eula
 
 RUN chmod 550 $BIN_DIR/start-server $BIN_DIR/check-eula
 
