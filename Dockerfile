@@ -18,7 +18,7 @@ LABEL maintainer         = "Bryan Honof"                                 \
       maintainer.website = "https://www.bryanhonof.be"                   \
       version            = "1.15"                                        \
       description        = "A minecraft spigot server in a container!"   \
-      dockerfile.repo    = "https://github.com/bryanhonof/docker_spigot"
+      dockerfile.repo    = "https://github.com/bryanhonof/docker-spigot"
 
 # Environment variables.
 ENV MOJANG_EULA_AGREE false
